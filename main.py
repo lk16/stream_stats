@@ -28,7 +28,11 @@ async def get_stats(request: Request) -> JSONResponse:
 async def update_stats(request: Request) -> Response:
     body = await request.json()
     stats = body["stats"]
-    STATS_FILE.write_text(stats)
+
+    if len(stats) > 1000:
+        print("stats too long!")
+    else:
+        STATS_FILE.write_text(stats)
     return Response()
 
 
@@ -36,8 +40,7 @@ app = Starlette(debug=True, routes=[
     Route('/', show_form),
     Route('/stats', get_stats, methods=["GET"]),
     Route('/stats', update_stats, methods=["PATCH"]),
-    Mount('/static', app=StaticFiles(directory='static'), name="static")
-
+    Mount('/static', app=StaticFiles(directory='static'), name="static"),
 ])
 
 

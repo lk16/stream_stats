@@ -3,11 +3,12 @@
 from starlette.applications import Starlette
 from starlette.responses import JSONResponse, HTMLResponse, Response
 from starlette.requests import Request
-from starlette.routing import Route
+from starlette.routing import Route, Mount
+from starlette.staticfiles import StaticFiles
 import uvicorn
 from pathlib import Path
 
-FORM_HTML = Path('web/form.html').read_text()
+FORM_HTML = Path('static/form.html').read_text()
 STATS_FILE = Path("stats.txt")
 
 
@@ -35,6 +36,8 @@ app = Starlette(debug=True, routes=[
     Route('/', show_form),
     Route('/stats', get_stats, methods=["GET"]),
     Route('/stats', update_stats, methods=["PATCH"]),
+    Mount('/static', app=StaticFiles(directory='static'), name="static")
+
 ])
 
 

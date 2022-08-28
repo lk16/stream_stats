@@ -9,6 +9,7 @@ import uvicorn
 from pathlib import Path
 
 FORM_HTML = Path('static/form.html').read_text()
+STREAM_PAGE_HTML = Path('static/stream.html').read_text()
 STATS_FILE = Path("stats.txt")
 
 
@@ -36,13 +37,19 @@ async def update_stats(request: Request) -> Response:
     return Response()
 
 
+async def stream_page(request: Request) -> HTMLResponse:
+    return HTMLResponse(STREAM_PAGE_HTML)
+
+
 app = Starlette(debug=True, routes=[
     Route('/', show_form),
     Route('/stats', get_stats, methods=["GET"]),
     Route('/stats', update_stats, methods=["PATCH"]),
     Mount('/static', app=StaticFiles(directory='static'), name="static"),
+    Route('/stream', stream_page)
+
 ])
 
 
 if __name__ == "__main__":
-    uvicorn.run(app)
+    uvicorn.run(app, host="0.0.0.0")
